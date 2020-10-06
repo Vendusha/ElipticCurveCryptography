@@ -37,20 +37,22 @@ def arnold_map_modified(img, var_c, var_d, var_e, var_f, var_s, encryption="Encr
     It returns image either encrypted or decrypted by modified arnold map matrix"""
     dim_m = img.shape[0] # the dimensions are number of pixels, don't start with 0
     dim_n = img.shape[1]
+    new_img=img
     product = list(itertools.product(range(dim_m), range(dim_n)))
     if encryption == "Encrypt":
         print("Encrypting by modified Arnold map")
         for i,j in product:
-            print(i)
-            print(j)
-
-    pdb.set_trace()
+            for index in range(s):
+                x_arnold=i+j
+            new_img(x,y)
     # im = array(Image.open("cat.jpg"))
     # N = im.shape[0]
 
     # # create x and y components of Arnold's cat mapping
-    # x,y = meshgrid(range(N),range(N))
-    # pdb.set_trace()
+    x,y = meshgrid(range(N),range(N))
+    print(x)
+    print(y)
+    pdb.set_trace()
     # xmap = (2*x+y) % N
     # ymap = (x+y) % N
 
@@ -72,16 +74,26 @@ def arnold_map_modified(img, var_c, var_d, var_e, var_f, var_s, encryption="Encr
     # elif encryption == "Decrypt":
         # x_map = ()
         # y_map = ()
-    return(x_map)
+    return(img)
 # img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
 # arnold_map_modified(img,1,2,3,4,5)
 ##################TEST FOR SNAKE FUNCTION############
-img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
-plt.imshow(img, cmap='gray')
-plt.show()
-img_snakeEncrypted=snake(img,"Encrypt")
-plt.imshow(img_snakeEncrypted, cmap='gray')
-plt.show()
-img_snakeDecrypted=snake(img_snakeEncrypted,"Decrypt")
-plt.imshow(img_snakeDecrypted, cmap='gray')
-plt.show()
+# img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
+# plt.imshow(img, cmap='gray')
+# plt.show()
+# img_snakeEncrypted=snake(img,"Encrypt")
+# plt.imshow(img_snakeEncrypted, cmap='gray')
+# plt.show()
+# img_snakeDecrypted=snake(img_snakeEncrypted,"Decrypt")
+# plt.imshow(img_snakeDecrypted, cmap='gray')
+# plt.show()
+##################TEST FOR THE ARNOLD MAP############
+# img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
+# plt.imshow(img, cmap='gray')
+# plt.show()
+# img_Encrypted=arnold_map_modified(img,"Encrypt")
+# plt.imshow(img_Encrypted, cmap='gray')
+# plt.show()
+# img_Decrypted=arnold_map_modified(img_Encrypted,"Decrypt")
+# plt.imshow(img_Decrypted, cmap='gray')
+# plt.show()
