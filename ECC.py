@@ -5,6 +5,7 @@ from numpy import *
 import itertools
 import cv2
 import pdb
+import numpy as np
 # from PIL import Image
 def snake(img, encryption="Encrypt"):
     """Snake function takes two arguments: csv image and "Encrypt"/"Decrypt"
@@ -31,52 +32,44 @@ def snake(img, encryption="Encrypt"):
                 previous=(i,j)
     return img
 
-def arnold_map_modified(img, var_c, var_d, var_e, var_f, var_s, encryption="Encrypt"):
-    """First two arguments: csv image and "Encrypt"/"Decrypt",
-    after that the arguments are parameters for the modification.
+def transform(img, num):
+    rows, cols, ch = img.shape
+    if (rows == cols):
+        n = rows
+        img2 = np.zeros([rows, cols, ch])
+
+        for x in range(0, rows):
+            for y in range(0, cols):
+
+                img2[x][y] = img[(x+y)%n][(x+2*y)%n]
+
+        cv2.imwrite("img/iteration" + str(num) + ".jpg", img2)
+        return img2
+
+    else:
+        print("The image is not square.")
+
+def arnold_map_modified(img, c, d, e, f, s, encryption="Encrypt"):
+    """First and last argument: csv image and "Encrypt"/"Decrypt",
+    in between are parameters for the modification.
     It returns image either encrypted or decrypted by modified arnold map matrix"""
     dim_m = img.shape[0] # the dimensions are number of pixels, don't start with 0
     dim_n = img.shape[1]
-    new_img=img
+    if dim_m!=dim_n:
+        print("Picture has wrong dimensions")
+    new_img=img.copy()
     product = list(itertools.product(range(dim_m), range(dim_n)))
     if encryption == "Encrypt":
         print("Encrypting by modified Arnold map")
-        for i,j in product:
+        for x, y in product:
             for index in range(s):
-                x_arnold=i+j
-            new_img(x,y)
-    # im = array(Image.open("cat.jpg"))
-    # N = im.shape[0]
-
-    # # create x and y components of Arnold's cat mapping
-    x,y = meshgrid(range(N),range(N))
-    print(x)
-    print(y)
-    pdb.set_trace()
-    # xmap = (2*x+y) % N
-    # ymap = (x+y) % N
-
-    # for i in range(N+1):
-    #     result = Image.fromarray(im)
-    #     result.save("cat_%03d.png" % i)
-    #     im = im[xmap,ymap]
-
-    # x_grid, y_grid = meshgrid(range(dim_m),range(dim_n))
-    # if dim_m != dim_n:
-    #     print("The pixels are not squared, cannot apply ArnoldMap")
-    # if encryption == "Encrypt":
-    #     for _ in range(var_s):
-    #         x_map = (x_grid+var_c*y_grid)+ var_e % dim_m
-    #         y_map = (var_d*x_grid+var_c*var_d*y_grid) +var_f % dim_m
-    #         img=img(dstack((x_map,y_map)))
-    #         plt.imshow(img, cmap="gray")
-    #         plt.show()
-    # elif encryption == "Decrypt":
-        # x_map = ()
-        # y_map = ()
-    return(img)
-# img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
-# arnold_map_modified(img,1,2,3,4,5)
+                new_img[x][y]=img[(x+c*y+e) % dim_m][(d*(x)+(c*d+1)*y+f) % dim_m]
+    elif encryption == "Decrypt":
+        print("Decrypting modified Arnold map")
+        for x,y in product:
+            for index in range(s):
+                new_img[x][y]=img[((c*d+1)*(x-e)-c*(y-f)) % dim_m][(-d*(x-e)+y-f) % dim_m]
+    return(new_img)
 ##################TEST FOR SNAKE FUNCTION############
 # img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
 # plt.imshow(img, cmap='gray')
@@ -88,12 +81,12 @@ def arnold_map_modified(img, var_c, var_d, var_e, var_f, var_s, encryption="Encr
 # plt.imshow(img_snakeDecrypted, cmap='gray')
 # plt.show()
 ##################TEST FOR THE ARNOLD MAP############
-# img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
-# plt.imshow(img, cmap='gray')
-# plt.show()
-# img_Encrypted=arnold_map_modified(img,"Encrypt")
-# plt.imshow(img_Encrypted, cmap='gray')
-# plt.show()
-# img_Decrypted=arnold_map_modified(img_Encrypted,"Decrypt")
-# plt.imshow(img_Decrypted, cmap='gray')
-# plt.show()
+img=cv2.imread("Test.png",cv2.IMREAD_GRAYSCALE)
+plt.imshow(img, cmap='gray')
+plt.show()
+img_Encrypted=arnold_map_modified(img,1,2,3,4,5,"Encrypt")
+plt.imshow(img_Encrypted, cmap='gray')
+plt.show()
+img_Decrypted=arnold_map_modified(img_Encrypted,1,2,3,4,5,"Decrypt")
+plt.imshow(img_Decrypted, cmap='gray')
+plt.show()
