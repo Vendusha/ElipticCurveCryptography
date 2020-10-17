@@ -115,26 +115,27 @@ def key_matrix_generator_Bob(public_key):
     """Key Matrix Generator"""
     key=ECC.import_key(public_key) #importing private key from Alice
     Q=key.pointQ
-    # x=int(key.pointQ.x)
-    # y=int(key.pointQ.y)
-    # x=(key.pointQ.x)
-    # y=(key.pointQ.y)
-    # construct=ECC.construct(curve='P-256',point_x=x,point_y=y)
     n=32
     k_b = (random.randrange(2**(n-1)+1, 2**n - 1) )
     k_c = (random.randrange(2**(n-1)+1, 2**n - 1))
     K_0 = k_b*Q
     L = k_c*Q
     ##########Key Matrix Generation according to the article#############
-    Keyseq=0
+    Keyseq=""
     i=0
     K=K_0
-    while Keyseq.bit_length()<2**19:
+    K_M_0=np.empty((256,256))
+    while len(Keyseq)<2**19:
         i+=1
         K+=K
-        Keyseq= (Keyseq |(int(K.x)^int(L.x))| (int(K.y)^int(L.y)))
-        print(Keyseq)
-    return
+        Keyseq=Keyseq+bin(int(K.x)^int(L.x))[2:]+bin((int(K.y)^int(L.y)))[2:]
+    for i in range(1,2**8):
+        for j in range(1,2**8):
+            ptr=2**11*(i-1)+2**3*(j-1)
+            for k in range(1,2**3):
+                ptr+=1
+                K_M_0[i,j]=Keyseq[ptr]
+        return K_M_0
 public_key=key_generation_Alice()
 key_matrix_generator_Bob(public_key)
 
