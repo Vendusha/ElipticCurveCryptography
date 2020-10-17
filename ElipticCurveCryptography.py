@@ -8,6 +8,9 @@ import os
 import pdb
 import numpy as np
 from Crypto.PublicKey import ECC
+from Crypto.Random import random
+from Crypto.Util import number
+import ECC_functions
 def preprocessing(img):
     # """Loads an image and splits it in the t 256x256 sub-images."""
     dim_m = img.shape[0]
@@ -92,14 +95,51 @@ def arnold_map_modified(img, c, d, e, f, s, encryption="Encrypt"):
             for index in range(s):
                 new_img[x][y]=img[((c*d+1)*(x-e)-c*(y-f)) % dim_m][(-d*(x-e)+y-f) % dim_m]
     return(new_img)
-def key_generation():
-    """ Helper function to retrieve public key """
+
+def key_generation_Alice():
+    """ Generate ECC key """
+    # n=32
+    # p=number.getPrime(n)
+    # k_a = (random.randrange(2, p-2))
+    # F_p=np.arange(0,p-1)
+    # print(F_p)
     key=ECC.generate(curve='P-256')
     private_key_file = open('AlicePrivateKey.pem', 'wt')
     private_key_file.write(key.export_key(format='PEM'))
     private_key_file.close()
     public_key = key.public_key()
-    return public_key.export_key(format="PEM")
+    return(public_key.export_key(format="PEM"))
+    # return
+
+def key_matrix_generator_Bob(public_key):
+    """Key Matrix Generator"""
+    key=ECC.import_key(public_key) #importing private key from Alice
+    Q=key.pointQ
+    # x=int(key.pointQ.x)
+    # y=int(key.pointQ.y)
+    # x=(key.pointQ.x)
+    # y=(key.pointQ.y)
+    # construct=ECC.construct(curve='P-256',point_x=x,point_y=y)
+    n=32
+    k_b = (random.randrange(2**(n-1)+1, 2**n - 1) )
+    k_c = (random.randrange(2**(n-1)+1, 2**n - 1))
+    K_0 = k_b*Q
+    L = k_c*Q
+    ##########Key Matrix Generation according to the article#############
+    Keyseq=0
+    i=0
+    K=K_0
+    while Keyseq.bit_length()<2**19:
+        i+=1
+        K+=K
+        Keyseq= (Keyseq |(int(K.x)^int(L.x))| (int(K.y)^int(L.y)))
+        print(Keyseq)
+    return
+public_key=key_generation_Alice()
+key_matrix_generator_Bob(public_key)
+
+
+
 
 ##################TEST FOR PREPROCESSING############
 # img=cv2.imread("test_image.jpg",cv2.IMREAD_GRAYSCALE)
