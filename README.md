@@ -1,2 +1,2 @@
 # ElipticCurveCryptography
-The repository of vendula and Elias to generate elictipc cryptography pictures.
+The repository of Vendula to generate elictipc cryptography pictures.
